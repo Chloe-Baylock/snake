@@ -1,4 +1,6 @@
-# Example file showing a basic pygame "game loop"
+# TO do
+# do not let player 180 direction inputs
+
 import pygame
 import random
 
@@ -10,23 +12,28 @@ running = True
 
 
 class Player:
-  def __init__(self, color, x, y, direction, tick, maxTick):
+  def __init__(self, color, x, y, tick, maxTick):
     self.color = color
     self.x = x
     self.y = y
-    self.direction = direction
     self.tick = tick
     self.maxTick = maxTick
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
+    self.buffer = {0: "Right", 1: None}
+    self.direction = None
 
   def move(self):
-    if (p.direction == 'Left'):
+    if (self.buffer[0]):
+      self.direction = self.buffer[0]
+      self.buffer[0] = self.buffer[1]
+      self.buffer[1] = None
+    if (self.direction == 'Left'):
       self.x -= 16
-    elif (p.direction == 'Right'):
+    elif (self.direction == 'Right'):
       self.x += 16
-    elif (p.direction == 'Up'):
+    elif (self.direction == 'Up'):
       self.y -= 16
-    elif (p.direction == 'Down'):
+    elif (self.direction == 'Down'):
       self.y += 16
 
   def setDirection(self, direction):
@@ -34,7 +41,7 @@ class Player:
     self.lockDirection(direction)
 
   def moreTime(self):
-    if (self.tick == self.maxTick):
+    if (self.tick >= self.maxTick):
       self.move()
       self.tick = 0
     else:
@@ -49,6 +56,26 @@ class Player:
   def unlockDirection(self, direction):
     self.availableDict[direction] = True
 
+  def setBuffer(self, direction):
+    if self.buffer[1]:
+      return
+      # dont buffer if we are already full
+
+    elif self.buffer[0] and direction == self.direction:
+      # do not buffer the current diretion unless it is second buffer
+      self.buffer[1] = direction
+
+    elif self.buffer[0] == direction:
+      return
+      # do not buffer currently buffered direction
+
+    elif self.buffer[0]:
+      self.buffer[1] = direction
+      #if there is already something buffered buffer this
+
+    else:
+      self.buffer[0] = direction 
+      #if you get here buffer this
 
 class Apple:
   def __init__(self, color,x,y):
@@ -60,7 +87,7 @@ class Apple:
     self.x = random.randrange(0,256,16)
     self.y = random.randrange(0,256,16)
   
-p = Player('Lime', 32, 32, 'Right', 0, 7)
+p = Player('Lime', 32, 32, 0, 4)
 a = Apple('Red',random.randrange(0,256,16),random.randrange(0,256,16))
 aX = 128
 aY = 128
@@ -74,17 +101,17 @@ while running:
         running = False
     if event.type == pygame.KEYDOWN:
       if (p.isAvailable("Left") and (event.key == pygame.K_LEFT or event.key == pygame.K_a)):
-        p.setDirection("Left")
-        print("Left")
+        p.setBuffer("Left")
+        p.lockDirection("Left")
       elif (p.isAvailable("Right") and (event.key == pygame.K_RIGHT or event.key == pygame.K_d)):
-        p.setDirection("Right")
-        print("Right")
+        p.setBuffer("Right")
+        p.lockDirection("Right")
       elif (p.isAvailable("Up") and (event.key == pygame.K_UP or event.key == pygame.K_w)):
-        p.setDirection("Up")
-        print("Up")
+        p.setBuffer("Up")
+        p.lockDirection("Up")
       elif (p.isAvailable("Down") and (event.key == pygame.K_DOWN or event.key == pygame.K_s)):
-        p.setDirection("Down")
-        print("Down")
+        p.setBuffer("Down")
+        p.lockDirection("Down")
 
     if event.type == pygame.KEYUP:
       if(event.key == pygame.K_LEFT or event.key == pygame.K_a):
@@ -95,20 +122,6 @@ while running:
         p.unlockDirection("Up")
       if(event.key == pygame.K_DOWN or event.key == pygame.K_s):
         p.unlockDirection("Down")
-
-
-
-  # if (p.isAvailable("Left") and (downKeys[pygame.K_a] or downKeys[pygame.K_LEFT])):
-  #   p.setDirection("Left")
-  # elif (p.isAvailable("Right") and (downKeys[pygame.K_d] or downKeys[pygame.K_RIGHT])):
-  #   p.setDirection("Right")
-  # elif (p.isAvailable("Up") and (downKeys[pygame.K_w] or downKeys[pygame.K_UP])):
-  #   p.setDirection("Up")
-  # elif (p.isAvailable("Down") and (downKeys[pygame.K_s] or downKeys[pygame.K_DOWN])):
-  #   p.setDirection("Down")
-
-  
-  
 
   if (p.x == a.x and p.y == a.y):
     a.reposition()
