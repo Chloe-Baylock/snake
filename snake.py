@@ -1,6 +1,3 @@
-# TO do
-# do not let player 180 direction inputs
-
 import pygame
 import random
 
@@ -66,6 +63,12 @@ class Player:
       return
       # dont buffer if we are already full
 
+    elif (self.buffer[0] and (opposites(direction, self.buffer[0]))):
+      return
+
+    elif ((not self.buffer[0]) and (opposites(direction, self.direction))):
+      return
+
     elif self.buffer[0] and direction == self.direction:
       # do not buffer the current diretion unless it is second buffer
       self.buffer[1] = direction
@@ -94,6 +97,13 @@ class Apple:
   def reposition(self):
     self.x = random.randrange(0,256,16)
     self.y = random.randrange(0,256,16)
+
+def opposites(d1, d2):
+  if (d1 == "Right" and d2 == "Left") or (d1 == "Left" and d2 == "Right") or (d1 == "Up" and d2 == "Down") or (d1 == "Down" and d2 == "Up"):
+    return True
+  else:
+    return False
+  
   
 p = Player('Lime', 32, 32, 0, 4)
 a = Apple('Red',random.randrange(0,256,16),random.randrange(0,256,16))
