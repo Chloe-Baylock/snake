@@ -39,7 +39,7 @@ class Player:
     elif (self.direction == 'Down'):
       self.y += 16
 
-    self.body.append(tuple((self.x, self.y)))
+    self.body.append((self.x, self.y))
 
   def setDirection(self, direction):
     self.direction = direction
@@ -83,7 +83,7 @@ class Player:
       #if you get here buffer this
 
   def grow(self):
-    self.body.append(tuple((self.x, self.y)))
+    self.body.append((self.x, self.y))
 
 class Apple:
   def __init__(self, color,x,y):
