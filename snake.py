@@ -72,15 +72,30 @@ while running:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
         running = False
-    elif event.type == pygame.KEYDOWN:
+    if event.type == pygame.KEYDOWN:
       if (p.isAvailable("Left") and (event.key == pygame.K_LEFT or event.key == pygame.K_a)):
         p.setDirection("Left")
+        print("Left")
       elif (p.isAvailable("Right") and (event.key == pygame.K_RIGHT or event.key == pygame.K_d)):
         p.setDirection("Right")
+        print("Right")
       elif (p.isAvailable("Up") and (event.key == pygame.K_UP or event.key == pygame.K_w)):
         p.setDirection("Up")
+        print("Up")
       elif (p.isAvailable("Down") and (event.key == pygame.K_DOWN or event.key == pygame.K_s)):
         p.setDirection("Down")
+        print("Down")
+
+    if event.type == pygame.KEYUP:
+      if(event.key == pygame.K_LEFT or event.key == pygame.K_a):
+        p.unlockDirection("Left")
+      if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+        p.unlockDirection("Right")
+      if(event.key == pygame.K_UP or event.key == pygame.K_w):
+        p.unlockDirection("Up")
+      if(event.key == pygame.K_DOWN or event.key == pygame.K_s):
+        p.unlockDirection("Down")
+
 
 
   # if (p.isAvailable("Left") and (downKeys[pygame.K_a] or downKeys[pygame.K_LEFT])):
