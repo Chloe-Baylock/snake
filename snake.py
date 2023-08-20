@@ -21,8 +21,11 @@ class Player:
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
     self.buffer = {0: "Right", 1: None}
     self.direction = None
+    self.body = [(self.x, self.y)]
 
   def move(self):
+    self.body.pop(0)
+
     if (self.buffer[0]):
       self.direction = self.buffer[0]
       self.buffer[0] = self.buffer[1]
@@ -35,6 +38,8 @@ class Player:
       self.y -= 16
     elif (self.direction == 'Down'):
       self.y += 16
+
+    self.body.append(tuple((self.x, self.y)))
 
   def setDirection(self, direction):
     self.direction = direction
@@ -76,6 +81,9 @@ class Player:
     else:
       self.buffer[0] = direction 
       #if you get here buffer this
+
+  def grow(self):
+    self.body.append(tuple((self.x, self.y)))
 
 class Apple:
   def __init__(self, color,x,y):
@@ -124,6 +132,7 @@ while running:
         p.unlockDirection("Down")
 
   if (p.x == a.x and p.y == a.y):
+    p.grow()
     a.reposition()
     # reposition apple when eaten
 
@@ -131,8 +140,9 @@ while running:
   screen.fill("black")
 
   # RENDER YOUR GAME HERE
-  pygame.draw.rect(screen, p.color, (p.x,p.y,16,16))
   pygame.draw.rect(screen, "red", (a.x,a.y,16,16))
+  for (x, y) in p.body:
+    pygame.draw.rect(screen, p.color, (x,y,16,16))
 
 
 
