@@ -37,6 +37,7 @@ class Player:
     self.gamin = True
 
   def restart(self):
+    a.reposition()
     self.x = self.startX
     self.y = self.startY
     global size
@@ -58,22 +59,49 @@ class Player:
       self.direction = self.buffer[0]
       self.buffer[0] = self.buffer[1]
       self.buffer[1] = None
+
     if (self.direction == 'Left'):
-      self.x -= 1
+      n = self.x - 1
+
+      #looping border
+      if (n, self.y) in border:
+        self.x = n + width - 1
+      else:
+        self.x -= 1
+
     elif (self.direction == 'Right'):
-      self.x += 1
+      n = self.x + 1
+      if (n, self.y) in border:
+        self.x = n - width + 1
+      else:
+        self.x += 1
+
     elif (self.direction == 'Up'):
-      self.y -= 1
+      m = self.y - 1
+      if (self.x, m) in border:
+        self.y = m + height - 1
+      else:
+        self.y -= 1
+
     elif (self.direction == 'Down'):
-      self.y += 1
+      m = self.y + 1
+      if (self.x, m) in border:
+        self.y = m - height + 1
+      else:
+        self.y += 1
+    
+    # if (n, m) in border:
+    #   print("live")
+    #   self.x = n + width
+
 
     if ((self.x, self.y) in self.body):
       print("game over")
       p.gamin = False
     
-    if (self.x, self.y) in border:
-      print("game over")
-      p.gamin = False
+    # if (self.x, self.y) in border:
+    #   print("game over")
+    #   p.gamin = False
 
     self.body.append((self.x, self.y))
 
@@ -126,10 +154,6 @@ class Player:
 
   def grow(self):
     self.body.append((self.x, self.y))
-    global score
-    global text_surface
-    score += 1
-    text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
     
 class Apple:
   def __init__(self, color,x,y):
@@ -138,8 +162,16 @@ class Apple:
     self.y = y
 
   def reposition(self):
-    self.x = random.randrange(1, width, 1)
-    self.y = random.randrange(1, height, 1)
+    if score < 1:
+      self.x = random.randrange(1, width, 1)
+      self.y = random.randrange(1, height, 1)
+    else:
+      nx = random.randrange(1, width, 1)
+      ny = random.randrange(1, height, 1)
+      rx = random.randrange(0, 2, 1)
+      ry = random.randrange(0, 2, 1)
+      self.x = nx + rx * width
+      self.y = ny + ry * height
 
 def opposites(d1, d2):
   if (d1 == "Right" and d2 == "Left") or (d1 == "Left" and d2 == "Right") or (d1 == "Up" and d2 == "Down") or (d1 == "Down" and d2 == "Up"):
@@ -150,15 +182,18 @@ def opposites(d1, d2):
 playerList = []
 
 p = Player('Lime', 1, 1, 0, 4)
-a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
+a = Apple('Red',100, 100)
+# a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
 
 # for r in range(1, 3, 1):
 p2 = Player('Yellow', 11, 1, 0, 4)
 p3 = Player('Pink', 1, 11, 0, 4)
+adder = Player('Purple', 11, 11, 0, 4)
 
 playerList.append(p)
 playerList.append(p2)
 playerList.append(p3)
+playerList.append(adder)
 
 
 while running:
@@ -203,18 +238,29 @@ while running:
         for s in playerList:
           s.unlockDirection("Down")
 
-  if (p.x == a.x and p.y == a.y):
+  if (((a.x,a.y)) in s.body for s in playerList):
+    # print(((a.x,a.y)))
+    # print("that was a")
+    print(s.color for s in playerList)
     for s in playerList:
       s.grow()
+    score += 1
+    text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
     if score >= 5:
       size -= 1
+
+  # if (p.x == a.x and p.y == a.y):
+  # for s in playerList:
+  #   s.grow()
+  # score += 1
+  # text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
+  # if score >= 5:
+  #   size -= 1
     
-    # height = size * 10
-    # width = size * 10
-    a.reposition()
-    while (a.x, a.y) in (p.body):
-      a.reposition()
-    # reposition apple when eaten
+  # for s in playerList:
+  #   while (a.x, a.y) in (s.body):
+  #     a.reposition()
+  #     # reposition apple when eaten
 
   if p.gamin:
     #this checks for gameover
@@ -226,14 +272,16 @@ while running:
 
     border = []
 
-    for x in range(0, height + 1, 1):
+    for x in range(0, 2 * width + 1, 1):
       border.append((x,0))
       border.append((x,height))
+      border.append((x, 2 * height))
 
     # y will not contain the corners an additional time
-    for y in range(1, width + 1, 1):
+    for y in range(1, 2 * width + 1, 1):
       border.append((0,y))
       border.append((width,y))
+      border.append((2 * width, y))
 
     pygame.draw.rect(screen, "red", (a.x * size,a.y * size,size,size))
     # for (x, y) in p.body:
