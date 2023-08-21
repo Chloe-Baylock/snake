@@ -21,12 +21,13 @@ size = 16
 height = 10
 width = 10
 
-
 class Player:
   def __init__(self, color, x, y, tick, maxTick):
     self.color = color
     self.x = x
     self.y = y
+    self.startX = x
+    self.startY = y
     self.tick = tick
     self.maxTick = maxTick
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
@@ -36,8 +37,8 @@ class Player:
     self.gamin = True
 
   def restart(self):
-    self.x = 1
-    self.y = 1
+    self.x = self.startX
+    self.y = self.startY
     global size
     size = 16
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
@@ -145,10 +146,20 @@ def opposites(d1, d2):
     return True
   else:
     return False
-  
-  
+
+playerList = []
+
 p = Player('Lime', 1, 1, 0, 4)
 a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
+
+# for r in range(1, 3, 1):
+p2 = Player('Yellow', 11, 1, 0, 4)
+p3 = Player('Pink', 1, 11, 0, 4)
+
+playerList.append(p)
+playerList.append(p2)
+playerList.append(p3)
+
 
 while running:
     # poll for events
@@ -159,32 +170,42 @@ while running:
         running = False
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_r:
-        p.restart()
+        for s in playerList:
+          s.restart()
       if (p.isAvailable("Left") and (event.key == pygame.K_LEFT or event.key == pygame.K_a)):
-        p.setBuffer("Left")
-        p.lockDirection("Left")
+        for s in playerList:
+          s.setBuffer("Left")
+          s.lockDirection("Left")
       elif (p.isAvailable("Right") and (event.key == pygame.K_RIGHT or event.key == pygame.K_d)):
-        p.setBuffer("Right")
-        p.lockDirection("Right")
+        for s in playerList:
+          s.setBuffer("Right")
+          s.lockDirection("Right")
       elif (p.isAvailable("Up") and (event.key == pygame.K_UP or event.key == pygame.K_w)):
-        p.setBuffer("Up")
-        p.lockDirection("Up")
+        for s in playerList:
+          s.setBuffer("Up")
+          s.lockDirection("Up")
       elif (p.isAvailable("Down") and (event.key == pygame.K_DOWN or event.key == pygame.K_s)):
-        p.setBuffer("Down")
-        p.lockDirection("Down")
+        for s in playerList:
+          s.setBuffer("Down")
+          s.lockDirection("Down")
 
     if event.type == pygame.KEYUP:
       if(event.key == pygame.K_LEFT or event.key == pygame.K_a):
-        p.unlockDirection("Left")
+        for s in playerList:
+          s.unlockDirection("Left")
       if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
-        p.unlockDirection("Right")
+        for s in playerList:
+          s.unlockDirection("Right")
       if(event.key == pygame.K_UP or event.key == pygame.K_w):
-        p.unlockDirection("Up")
+        for s in playerList:
+          s.unlockDirection("Up")
       if(event.key == pygame.K_DOWN or event.key == pygame.K_s):
-        p.unlockDirection("Down")
+        for s in playerList:
+          s.unlockDirection("Down")
 
   if (p.x == a.x and p.y == a.y):
-    p.grow()
+    for s in playerList:
+      s.grow()
     if score >= 5:
       size -= 1
     
@@ -215,8 +236,11 @@ while running:
       border.append((width,y))
 
     pygame.draw.rect(screen, "red", (a.x * size,a.y * size,size,size))
-    for (x, y) in p.body:
-      pygame.draw.rect(screen, p.color, (x * size, y * size, size, size))
+    # for (x, y) in p.body:
+    #   pygame.draw.rect(screen, p.color, (x * size, y * size, size, size))
+    for n in playerList:
+      for (x, y) in n.body:
+        pygame.draw.rect(screen, n.color, (x*size, y*size, size, size))
     for (x,y) in border:
       pygame.draw.rect(screen, "gray", (x * size,y * size,size,size))
 
@@ -226,7 +250,9 @@ while running:
     # flip() the display to put your work on screen
     pygame.display.flip()
 
-    p.moreTime()
+    for s in playerList:
+      s.moreTime()
+
     dt = clock.tick(60) / 1000
 
 pygame.quit()
