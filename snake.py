@@ -1,6 +1,8 @@
 import pygame
 import random
 
+# have to store player position in singles and multiply that by size to line up player
+
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -8,18 +10,9 @@ clock = pygame.time.Clock()
 running = True
 
 border = []
-height = 160
-width = 160
-
-for x in range(0, height + 16, 16):
-  border.append((x,0))
-  border.append((x,height))
-
-# y will not contain the corners an additional time
-for y in range(16, width, 16):
-  border.append((0,y))
-  border.append((width,y))
-
+size = 16
+height = 10
+width = 10
 
 
 class Player:
@@ -36,13 +29,15 @@ class Player:
     self.gamin = True
 
   def restart(self):
-    self.x = 16
-    self.y = 16
+    self.x = 1
+    self.y = 1
+    global size
+    size = 16
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
     self.buffer = {0: "Right", 1: None}
     self.direction = None
     print(self.body)
-    self.body = [(16, 16)]
+    self.body = [(1, 1)]
     print(self.body)
     self.gamin = True
 
@@ -54,13 +49,13 @@ class Player:
       self.buffer[0] = self.buffer[1]
       self.buffer[1] = None
     if (self.direction == 'Left'):
-      self.x -= 16
+      self.x -= 1
     elif (self.direction == 'Right'):
-      self.x += 16
+      self.x += 1
     elif (self.direction == 'Up'):
-      self.y -= 16
+      self.y -= 1
     elif (self.direction == 'Down'):
-      self.y += 16
+      self.y += 1
 
     if ((self.x, self.y) in self.body):
       print("game over")
@@ -130,8 +125,8 @@ class Apple:
     self.y = y
 
   def reposition(self):
-    self.x = random.randrange(16,width,16)
-    self.y = random.randrange(16,height,16)
+    self.x = random.randrange(1, width, 1)
+    self.y = random.randrange(1, height, 1)
 
 def opposites(d1, d2):
   if (d1 == "Right" and d2 == "Left") or (d1 == "Left" and d2 == "Right") or (d1 == "Up" and d2 == "Down") or (d1 == "Down" and d2 == "Up"):
@@ -140,8 +135,8 @@ def opposites(d1, d2):
     return False
   
   
-p = Player('Lime', 32, 32, 0, 4)
-a = Apple('Red',random.randrange(16,width,16),random.randrange(16,height,16))
+p = Player('Lime', 1, 1, 0, 4)
+a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
 
 while running:
     # poll for events
@@ -178,8 +173,11 @@ while running:
 
   if (p.x == a.x and p.y == a.y):
     p.grow()
+    size -= 1
+    # height = size * 10
+    # width = size * 10
     a.reposition()
-    while (a.x,a.y) in (p.body):
+    while (a.x, a.y) in (p.body):
       a.reposition()
     # reposition apple when eaten
 
@@ -190,11 +188,23 @@ while running:
   # fill the screen with a color to wipe away anything from last frame
 
     # RENDER YOUR GAME HERE
-    pygame.draw.rect(screen, "red", (a.x,a.y,16,16))
+
+    border = []
+
+    for x in range(0, height + 1, 1):
+      border.append((x,0))
+      border.append((x,height))
+
+    # y will not contain the corners an additional time
+    for y in range(1, width + 1, 1):
+      border.append((0,y))
+      border.append((width,y))
+
+    pygame.draw.rect(screen, "red", (a.x * size,a.y * size,size,size))
     for (x, y) in p.body:
-      pygame.draw.rect(screen, p.color, (x,y,16,16))
+      pygame.draw.rect(screen, p.color, (x * size, y * size, size, size))
     for (x,y) in border:
-      pygame.draw.rect(screen, "gray", (x,y,16,16))
+      pygame.draw.rect(screen, "gray", (x * size,y * size,size,size))
 
 
 
@@ -203,6 +213,5 @@ while running:
 
     p.moreTime()
     dt = clock.tick(60) / 1000
-  #setting slower clock to slow movement
 
 pygame.quit()
