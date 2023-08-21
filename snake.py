@@ -5,6 +5,13 @@ import random
 
 # pygame setup
 pygame.init()
+
+
+
+score = 0
+my_font = pygame.font.SysFont("Comic Sans MS", 30)
+text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
+
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
@@ -36,10 +43,12 @@ class Player:
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
     self.buffer = {0: "Right", 1: None}
     self.direction = None
-    print(self.body)
     self.body = [(1, 1)]
-    print(self.body)
     self.gamin = True
+    global score
+    score = 0
+    global text_surface
+    text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
 
   def move(self):
     self.body.pop(0)
@@ -116,8 +125,11 @@ class Player:
 
   def grow(self):
     self.body.append((self.x, self.y))
-    print("Score: " + str(len(self.body)))
-
+    global score
+    global text_surface
+    score += 1
+    text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
+    
 class Apple:
   def __init__(self, color,x,y):
     self.color = color
@@ -173,7 +185,9 @@ while running:
 
   if (p.x == a.x and p.y == a.y):
     p.grow()
-    size -= 1
+    if score >= 5:
+      size -= 1
+    
     # height = size * 10
     # width = size * 10
     a.reposition()
@@ -207,6 +221,7 @@ while running:
       pygame.draw.rect(screen, "gray", (x * size,y * size,size,size))
 
 
+    screen.blit(text_surface, (160,160))
 
     # flip() the display to put your work on screen
     pygame.display.flip()
