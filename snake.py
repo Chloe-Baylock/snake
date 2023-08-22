@@ -12,12 +12,13 @@ score = 0
 my_font = pygame.font.SysFont("Comic Sans MS", 30)
 text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
 
-screen = pygame.display.set_mode((1280, 720))
+# screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((700, 700))
 clock = pygame.time.Clock()
 running = True
 
 border = []
-size = 16
+size = 64
 height = 10
 width = 10
 
@@ -41,7 +42,7 @@ class Player:
     self.x = self.startX
     self.y = self.startY
     global size
-    size = 16
+    size = 64
     self.availableDict = {"Left": True, "Right": True, "Up": True, "Down": True}
     self.buffer = {0: "Right", 1: None}
     self.direction = None
@@ -234,8 +235,9 @@ while running:
     score += 1
     a.reposition()
     text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
-    if score >= 5:
-      size -= 1
+    if score > 20: size -= 1
+    elif score > 10: size -= 2
+    elif score > 5: size -= 6
 
   if p.gamin:
     #this checks for gameover
@@ -251,6 +253,7 @@ while running:
       border.append((x,0))
       border.append((x,height))
       border.append((x, 2 * height))
+      # border.append((x, 3 * height))
 
     # y will not contain the corners an additional time
     for y in range(1, 2 * width + 1, 1):
@@ -259,11 +262,11 @@ while running:
       border.append((2 * width, y))
 
     pygame.draw.rect(screen, "red", (a.x * size,a.y * size,size,size))
-    # for (x, y) in p.body:
-    #   pygame.draw.rect(screen, p.color, (x * size, y * size, size, size))
+
     for n in playerList:
       for (x, y) in n.body:
         pygame.draw.rect(screen, n.color, (x*size, y*size, size, size))
+
     for (x,y) in border:
       pygame.draw.rect(screen, "gray", (x * size,y * size,size,size))
 
