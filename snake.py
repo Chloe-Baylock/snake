@@ -1,8 +1,6 @@
 import pygame
 import random
 
-# have to store player position in singles and multiply that by size to line up player
-
 # pygame setup
 pygame.init()
 
@@ -19,6 +17,7 @@ running = True
 
 border = []
 size = 64
+# size = 22
 height = 10
 width = 10
 
@@ -36,8 +35,14 @@ class Player:
     self.direction = None
     self.body = [(self.x, self.y)]
     self.gamin = True
+    self.bc = "gray"
+
+  def setColor(self, color):
+    self.color = color
 
   def restart(self):
+    p.color = "Gray20"
+    p.bc = "Gray"
     a.reposition()
     self.x = self.startX
     self.y = self.startY
@@ -157,11 +162,18 @@ class Apple:
     if score < 10:
       self.x = random.randrange(1, width, 1)
       self.y = random.randrange(1, height, 1)
-    else:
+    elif score < 21:
       nx = random.randrange(1, width, 1)
       ny = random.randrange(1, height, 1)
       rx = random.randrange(0, 2, 1)
       ry = random.randrange(0, 2, 1)
+      self.x = nx + rx * width
+      self.y = ny + ry * height
+    else:
+      nx = random.randrange(1, width, 1)
+      ny = random.randrange(1, height, 1)
+      rx = random.randrange(0, 3, 1)
+      ry = random.randrange(0, 3, 1)
       self.x = nx + rx * width
       self.y = ny + ry * height
 
@@ -173,18 +185,27 @@ def opposites(d1, d2):
 
 playerList = []
 
-p = Player('Lime', 1, 1, 0, 4)
 a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
 
-# for r in range(1, 3, 1):
+p = Player('Gray20', 1, 1, 0, 4)
 p2 = Player('Yellow', 11, 1, 0, 4)
 p3 = Player('Pink', 1, 11, 0, 4)
 adder = Player('Purple', 11, 11, 0, 4)
+p5 = Player('Orange', 1, 21, 0, 4)
+p6 = Player('Seagreen', 11, 21, 0, 4)
+p7 = Player('Blue', 21, 1, 0, 4)
+p8 = Player('Indigo', 21, 11, 0, 4)
+flak = Player('Gray20', 21, 21, 0, 4)
 
 playerList.append(p)
 playerList.append(p2)
 playerList.append(p3)
 playerList.append(adder)
+playerList.append(p5)
+playerList.append(p6)
+playerList.append(p7)
+playerList.append(p8)
+playerList.append(flak)
 
 
 while running:
@@ -235,9 +256,21 @@ while running:
     score += 1
     a.reposition()
     text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
-    if score > 20: size -= 1
-    elif score > 10: size -= 2
-    elif score > 5: size -= 6
+    if score > 29:
+      # p.bc = "Black"
+      size -= 1
+    elif score > 21:
+      size -= 0
+    elif score > 15:
+      size -= 2
+    elif score > 10:
+      size -= 0
+    elif score > 5:
+      size -= 6
+    elif score > 4:
+      p.setColor("Lime")
+    elif score > 2:
+      p.setColor("White")
 
   if p.gamin:
     #this checks for gameover
@@ -248,18 +281,20 @@ while running:
     # RENDER YOUR GAME HERE
 
     border = []
+    
 
-    for x in range(0, 2 * width + 1, 1):
+    for x in range(0, 3 * width + 1, 1):
       border.append((x,0))
       border.append((x,height))
       border.append((x, 2 * height))
-      # border.append((x, 3 * height))
+      border.append((x, 3 * height))
 
     # y will not contain the corners an additional time
-    for y in range(1, 2 * width + 1, 1):
+    for y in range(1, 3 * width + 1, 1):
       border.append((0,y))
       border.append((width,y))
       border.append((2 * width, y))
+      border.append((3 * width, y))
 
     pygame.draw.rect(screen, "red", (a.x * size,a.y * size,size,size))
 
@@ -268,7 +303,7 @@ while running:
         pygame.draw.rect(screen, n.color, (x*size, y*size, size, size))
 
     for (x,y) in border:
-      pygame.draw.rect(screen, "gray", (x * size,y * size,size,size))
+      pygame.draw.rect(screen, p.bc, (x * size,y * size,size,size))
 
 
     screen.blit(text_surface, (160,160))
