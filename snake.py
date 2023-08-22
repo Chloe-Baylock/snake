@@ -53,6 +53,7 @@ class Player:
     text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
 
   def move(self):
+
     self.body.pop(0)
 
     if (self.buffer[0]):
@@ -89,19 +90,9 @@ class Player:
         self.y = m - height + 1
       else:
         self.y += 1
-    
-    # if (n, m) in border:
-    #   print("live")
-    #   self.x = n + width
-
 
     if ((self.x, self.y) in self.body):
-      print("game over")
       p.gamin = False
-    
-    # if (self.x, self.y) in border:
-    #   print("game over")
-    #   p.gamin = False
 
     self.body.append((self.x, self.y))
 
@@ -162,7 +153,7 @@ class Apple:
     self.y = y
 
   def reposition(self):
-    if score < 1:
+    if score < 10:
       self.x = random.randrange(1, width, 1)
       self.y = random.randrange(1, height, 1)
     else:
@@ -182,8 +173,7 @@ def opposites(d1, d2):
 playerList = []
 
 p = Player('Lime', 1, 1, 0, 4)
-a = Apple('Red',100, 100)
-# a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
+a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
 
 # for r in range(1, 3, 1):
 p2 = Player('Yellow', 11, 1, 0, 4)
@@ -238,29 +228,14 @@ while running:
         for s in playerList:
           s.unlockDirection("Down")
 
-  if (((a.x,a.y)) in s.body for s in playerList):
-    # print(((a.x,a.y)))
-    # print("that was a")
-    print(s.color for s in playerList)
+  if any((a.x,a.y) in s.body for s in playerList):
     for s in playerList:
       s.grow()
     score += 1
+    a.reposition()
     text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
     if score >= 5:
       size -= 1
-
-  # if (p.x == a.x and p.y == a.y):
-  # for s in playerList:
-  #   s.grow()
-  # score += 1
-  # text_surface = my_font.render("Score: " + str(score), False, (155, 155, 155))
-  # if score >= 5:
-  #   size -= 1
-    
-  # for s in playerList:
-  #   while (a.x, a.y) in (s.body):
-  #     a.reposition()
-  #     # reposition apple when eaten
 
   if p.gamin:
     #this checks for gameover
