@@ -41,8 +41,8 @@ class Player:
     self.color = color
 
   def restart(self):
-    p.color = "Gray20"
-    p.bc = "Gray"
+    # p.color = "Gray20"
+    # p.bc = "Gray"
     a.reposition()
     self.x = self.startX
     self.y = self.startY
@@ -187,7 +187,8 @@ playerList = []
 
 a = Apple('Red',random.randrange(1,width,1),random.randrange(1,height,1))
 
-p = Player('Gray20', 1, 1, 0, 4)
+# p = Player('Gray20', 1, 1, 0, 4)
+p = Player('Lime', 1, 1, 0, 4)
 p2 = Player('Yellow', 11, 1, 0, 4)
 p3 = Player('Pink', 1, 11, 0, 4)
 adder = Player('Purple', 11, 11, 0, 4)
@@ -267,10 +268,10 @@ while running:
       size -= 0
     elif score > 5:
       size -= 6
-    elif score > 4:
-      p.setColor("Lime")
-    elif score > 2:
-      p.setColor("White")
+    # elif score > 4:
+    #   p.setColor("Lime")
+    # elif score > 2:
+    #   p.setColor("White")
 
   if p.gamin:
     #this checks for gameover
